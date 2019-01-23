@@ -13,18 +13,24 @@ accuracy 計算流程
 1. filter => 利用 knn 找出 k 個與 測試資料feature 內積最小的 訓練資料 並得到這些資料最常見的落點, 若最常見的落點 === 測試資料的實際落點則 return
 2. size => 計算出上一步最後留下的資料長度
 3. divide => 最常見的落點 === 測試資料的實際落點 / testSetSize
+
+feature 包含 投放點, 彈性, 大小 
+label 則是 最終落點 bucket
 */
 function runAnalysis() {
-  const testSetSize = 50;
-  const [testSet, trainingSet] = splitDataset(minMax(outputs, 3), testSetSize) // 將資料分為 測試資料 與 訓練資料
-  _.range(1, 15).forEach(k => {
+  const testSetSize = 50
+  const k = 10
+  _.range(0, 3).forEach(feature => {
+    // feature === 0 ~ 2
+    const data = _.map(outputs, row => [row[feature], _.last(row)]) // 資料為 [feature, label]
+    const [testSet, trainingSet] = splitDataset(minMax(data, 1), testSetSize) // 將資料分為 測試資料 與 訓練資料
     const accuracy = _.chain(testSet)
-    .filter(testCollect => knn(trainingSet, _.initial(testCollect), k) === testCollect[3])
+    .filter(testCollect => knn(trainingSet, _.initial(testCollect), k) === _.last(testCollect))
     .size()
     .divide(testSetSize)
     .value()
   
-  console.log(`取 k 為 ${k} 時Accuracy(準確性)為 ${accuracy}`)
+  console.log(`當 feature 為 陣列中第 ${feature} 個元素時 Accuracy(準確性) 為 ${accuracy}`)
   })
 }
 
@@ -71,19 +77,24 @@ function knn(data, feature, k) {
   .value();
 }
 
+var obj = {a: 1, b: 2}
+for(let xx in obj) {
+  console.log(xx)
+}
+
 // splitDataset : 將 dataset 分為 test set 及 training set
 /* @parms 
 data: 所有data
-testCount: 代表多少個隨機的 point
+testSetSize: 代表多少個隨機的 point
 shuffled: 將 data 隨機排序並返回
-testSet: 取10筆隨機排序之資料出來
+testSet: 取 testSetSize 筆隨機排序之資料出來
 trainingSet: 取出 testSet 後剩下的 隨機排序之 data
 */
-function splitDataset(data, testCount) {
+function splitDataset(data, testSetSize) {
   const shuffled = _.shuffle(data)
-  const testSet = _.slice(shuffled, 0, testCount)
-  const trainingSet = _.slice(shuffled, testCount)
-
+  const testSet = _.slice(shuffled, 0, testSetSize)
+  const trainingSet = _.slice(shuffled, testSetSize)
+  
   return [testSet, trainingSet];
 }
 

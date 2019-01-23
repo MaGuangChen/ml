@@ -1,17 +1,17 @@
 {
-  "name": "knn-tf",
+  "name": "plinko",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "score.js",
+  "directories": {
+    "lib": "lib"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@tensorflow/tfjs": "^0.14.1",
-    "@tensorflow/tfjs-node": "^0.1.21",
-    "lodash": "^4.17.11",
-    "shuffle-seed": "^1.1.6"
+    "loadash": "^1.0.0"
   }
 }
